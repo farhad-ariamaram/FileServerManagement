@@ -1,0 +1,96 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="text-center">
+    <div class="form-group">
+        <label for="file" class="control-label">فایل</label>
+        <input type="hidden" name="filename" id="filename" />
+        <input class="form-control" type="file" name="file" id="file" />
+    </div>
+    <div class="form-group">
+        <input type="button" onClick="fileUpload1()" value="آپلود" class="btn btn-primary btn-block" />
+    </div>
+</div>
+
+<script>
+    var system = "Public";
+    var subsystem = "Chat";
+    var ext = "";
+    var size = 0;
+    var recId = 123456;
+    var serverAddress = "";
+    var fileId = "";
+    var formData = new FormData();
+
+    function fileUpload1() {
+        size = ($('#file')[0].files[0].size);
+        const lastDot = $('#file')[0].files[0].name.lastIndexOf('.');
+        ext = $('#file')[0].files[0].name.substring(lastDot + 1);
+
+        if (size == 0) {
+            alert("zero byte file");
+            return;
+        }
+
+        $.ajax({
+            url: 'http://192.168.10.247:5000/api/server/server',
+            type: 'GET',
+            data: {
+                system: system,
+                subsystem: subsystem,
+                ext: ext,
+                size: size,
+                record: recId
+            },
+            success: function (data) {
+                console.log(data);
+                serverAddress = data.data.server;
+                fileId = data.data.id;
+            },
+            error: function (request, status, error) {
+                alert("Error - Manager server did not response");
+                return;
+            },
+            complete: function () {
+                fileUpload2();
+            }
+        });
+    }
+
+    function fileUpload2() {
+        formData.append('file', $('#file')[0].files[0]);
+        formData.append('id', fileId);
+
+        $.ajax({
+            xhr: function () {
+                var xhr = new window.XMLHttpRequest();
+
+                xhr.upload.addEventListener("progress", function (evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        percentComplete = parseInt(percentComplete * 100);
+                        $('.progress-bar').width(percentComplete + '%');
+                        $('.progress-bar > i').html(percentComplete + '%');
+                    }
+                }, false);
+
+                return xhr;
+            },
+            url: 'http://' + serverAddress + '/api/file/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (data) {
+                console.log(data);
+            },
+            error: function (request, status, error) {
+                alert("Error - Server did not response");
+            }
+        });
+
+    }
+</script>

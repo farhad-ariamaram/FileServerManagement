@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileServerManagementWepApp"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileLoaderWebApi", "FileLoaderWebApi\FileLoaderWebApi.csproj", "{BFA26AE0-BFD5-49A1-BAFE-AEF759CE4B99}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileServer.Test", "FileServer.Test\FileServer.Test.csproj", "{7D0BD437-28CB-4CE7-95DE-D8AFB6DAAC12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{BFA26AE0-BFD5-49A1-BAFE-AEF759CE4B99}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BFA26AE0-BFD5-49A1-BAFE-AEF759CE4B99}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BFA26AE0-BFD5-49A1-BAFE-AEF759CE4B99}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D0BD437-28CB-4CE7-95DE-D8AFB6DAAC12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D0BD437-28CB-4CE7-95DE-D8AFB6DAAC12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D0BD437-28CB-4CE7-95DE-D8AFB6DAAC12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D0BD437-28CB-4CE7-95DE-D8AFB6DAAC12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
