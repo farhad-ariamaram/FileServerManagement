@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,6 +32,20 @@ namespace FileLoaderWebApi
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "FileLoaderWebApi", Version = "v1" });
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllHeaders",
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin()
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod();
+                      });
+            });
+            services.Configure<FormOptions>(options =>
+            {
+                options.MultipartBodyLengthLimit = 100000000000;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +57,8 @@ namespace FileLoaderWebApi
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "FileLoaderWebApi v1"));
             }
+
+            app.UseCors("AllowAllHeaders");
 
             app.UseRouting();
 
