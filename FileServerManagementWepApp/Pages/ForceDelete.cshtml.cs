@@ -1,6 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using FileServerManagementWepApp.Models;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +52,17 @@ namespace FileServerManagementWepApp.Pages
 
             if (TblFile != null)
             {
+                //REMOVE FROM SERVER
+                var sever = TblFile.Server.Address;
+                var name = TblFile.Name + "." + TblFile.Extention;
+                HttpClient _client = new HttpClient();
+                var del = await _client.GetAsync("hhtp://" + sever + "/api/file/delete/" + name);
+                if (!del.IsSuccessStatusCode)
+                {
+                    ModelState.AddModelError("DeleteError","مشکل در حذف از سرور");
+                    return Page();
+                }
+
                 var size = TblFile.Size;
                 var server = TblFile.ServerId;
 
@@ -80,7 +92,7 @@ namespace FileServerManagementWepApp.Pages
 
             }
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Index" , new { status = 2 });
         }
     }
 }

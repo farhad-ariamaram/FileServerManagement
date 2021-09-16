@@ -29,13 +29,13 @@
                 توضیحات
             </dt>
             <dd class="col-sm-10">
-                @if (Model.TblFile.Description.Length > 50)
+                @if (Model.TblFile.Description != null && Model.TblFile.Description.Length > 50)
                 {
                     @Model.TblFile.Description.Substring(0, 50)
                 }
                 else
                 {
-                    @Model.TblFile.Description
+                    
                 }
             </dd>
         </dl>
