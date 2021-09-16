@@ -1,0 +1,115 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.ServerPage.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+
+
+@if (Model.TblServer.Active == false)
+{
+    <h1>حذف سرور</h1>
+
+    <h3>آیا از فعال کردن سرور زیر مطمئن می‌باشید؟</h3>
+    <div>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                نام سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Name)
+            </dd>
+            <dt class="col-sm-2">
+                آدرس سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Address)
+            </dd>
+            <dt class="col-sm-2">
+                ظرفیت سرور
+            </dt>
+            <dd class="col-sm-10">
+                <div dir="ltr">@Html.DisplayFor(model => model.TblServer.Capacity) GB</div>
+            </dd>
+            <dt class="col-sm-2">
+                نام کاربری سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.ServerUsername)
+            </dd>
+            <dt class="col-sm-2">
+                پسورد سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.ServerPassword)
+            </dd>
+            <dt class="col-sm-2">
+                وضعیت سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Active)
+            </dd>
+            <dt class="col-sm-2">
+                اولویت سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Priority)
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="TblServer.Id" />
+            <input type="submit" value="فعال" class="btn btn-success" />
+            <a asp-page="./Index">انصراف</a>
+        </form>
+    </div>
+}
+else
+{
+    <h1>حذف سرور</h1>
+
+    <h3>آیا از غیر فعال کردن سرور زیر مطمئن می‌باشید؟</h3>
+    <div>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">
+                نام سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Name)
+            </dd>
+            <dt class="col-sm-2">
+                آدرس سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Address)
+            </dd>
+            <dt class="col-sm-2">
+                ظرفیت سرور
+            </dt>
+            <dd class="col-sm-10">
+                <div dir="ltr">@Html.DisplayFor(model => model.TblServer.Capacity) GB</div>
+            </dd>
+            <dt class="col-sm-2">
+                وضعیت سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Active)
+            </dd>
+            <dt class="col-sm-2">
+                اولویت سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblServer.Priority)
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="TblServer.Id" />
+            <input type="submit" value="غیرفعال" class="btn btn-danger" />
+            <a asp-page="./Index">انصراف</a>
+        </form>
+    </div>
+}

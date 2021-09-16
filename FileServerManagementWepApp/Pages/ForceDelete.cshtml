@@ -1,0 +1,62 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.ForceDeleteModel
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>حذف</h1>
+
+<h3>آیا از حذف فایل مطمئن می‌باشید؟</h3>
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            نام فایل
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblFile.Name)
+        </dd>
+        <dt class="col-sm-2">
+            حجم فایل
+        </dt>
+        <dd class="col-sm-10">
+            <div dir="ltr"> @Html.DisplayFor(model => model.TblFile.Size) MB</div>
+        </dd>
+        <dt class="col-sm-2">
+            توضیحات
+        </dt>
+        <dd class="col-sm-10">
+            @if (Model.TblFile.Description.Length > 50)
+            {
+                @Model.TblFile.Description.Substring(0, 50)
+            }
+            else
+            {
+                @Model.TblFile.Description
+            }
+        </dd>
+        <dt class="col-sm-2">
+            سرور
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblFile.Server.Name)
+        </dd>
+    </dl>
+
+    <form method="post" id="myForm">
+        <input type="hidden" asp-for="TblFile.Id" />
+        <input type="submit" class="d-none" name="submitt" />
+    </form>
+    <a class="btn btn-danger ml-1 mr-1" onclick="deletefunc()"><i class="fa fa-trash"></i></a>
+    <a asp-page="./Index">انصراف</a>
+
+</div>
+
+@section Scripts{
+
+    <script>
+        function deletefunc() {
+            fetch('http://@(Model.TblFile.Server.Address)/api/file/delete/@Model.TblFile.Name')
+                .then(document.getElementById("myForm").submit());
+        }
+    </script>
+}

@@ -1,0 +1,29 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.LoginModel
+@{
+}
+
+<div class="row justify-content-center align-items-center m-3 mt-5">
+    <div class="col-lg-4 text-center">
+        <div class="bs-component">
+            <div class="text-danger">
+                @Html.ValidationMessage("WrongUP")
+            </div>
+            <form method="post">
+                <span class="text-danger" asp-validation-for="userModel.Username"></span>
+                <div class="form-group">
+                    <label asp-for="userModel.Username"></label>
+                    <input class="form-control" asp-for="userModel.Username">
+                </div>
+
+                <span class="text-danger" asp-validation-for="userModel.Password"></span>
+                <div class="form-group">
+                    <label asp-for="userModel.Password"></label>
+                    <input class="form-control" asp-for="userModel.Password" type="password">
+                </div>
+
+                <button type="submit" class="btn btn-block btn-primary">ورود</button>
+            </form>
+        </div>
+    </div>
+</div>

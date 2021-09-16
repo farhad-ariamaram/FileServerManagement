@@ -1,0 +1,70 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.ServerPage.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>ایجاد سرور</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @Html.ValidationMessage("PriorityError", new { @class = "text-danger" })
+            <div class="form-group">
+                <label asp-for="TblServer.Name" class="control-label">نام سرور</label>
+                <input asp-for="TblServer.Name" class="form-control" />
+                <span asp-validation-for="TblServer.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblServer.Address" class="control-label">آدرس سرور</label>
+                <input asp-for="TblServer.Address" class="form-control" />
+                <span asp-validation-for="TblServer.Address" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblServer.ServerUsername" class="control-label">نام کاربری سرور</label>
+                <input asp-for="TblServer.ServerUsername" class="form-control" />
+                <span asp-validation-for="TblServer.ServerUsername" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblServer.ServerPassword" class="control-label">پسورد سرور</label>
+                <input asp-for="TblServer.ServerPassword" class="form-control" />
+                <span asp-validation-for="TblServer.ServerPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblServer.Capacity" class="control-label">ظرفیت سرور</label>
+                <input asp-for="TblServer.Capacity" class="form-control" />
+                <span asp-validation-for="TblServer.Capacity" class="text-danger"></span>
+                <select name="sizeType">
+                    <option value="KB">KB</option>
+                    <option value="MB">MB</option>
+                    <option selected value="GB">GB</option>
+                    <option value="TB">TB</option>
+                </select>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <span class="ml-5">وضعیت سرور</span> <input class="form-check-input" asp-for="TblServer.Active" />
+                </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblServer.Priority" class="control-label">اولویت سرور</label>
+                <input asp-for="TblServer.Priority" class="form-control" />
+                <span asp-validation-for="TblServer.Priority" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="ایجاد" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">بازگشت</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

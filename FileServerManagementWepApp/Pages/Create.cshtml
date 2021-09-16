@@ -1,0 +1,135 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>ایجاد فایل</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div id="uploadForm">
+            <div class="form-group">
+                <label for="file" class="control-label">فایل</label>
+                <input type="hidden" name="filename" id="filename" />
+                <input class="form-control" type="file" name="file" id="file" />
+            </div>
+            <div class="form-group">
+                <input type="button" onClick="fileUpload()" value="آپلود" class="btn btn-primary btn-block" />
+            </div>
+            <div>
+                <a asp-page="Index">بازگشت</a>
+            </div>
+        </div>
+
+        <script>
+            function fileUpload() {
+                
+
+                const size = ($('#file')[0].files[0].size) / 1024 / 1024;
+                const lastDot = $('#file')[0].files[0].name.lastIndexOf('.');
+                const ext = $('#file')[0].files[0].name.substring(lastDot + 1);
+
+                if (size == 0) {
+                    $('#progressbarModal').modal('hide');
+                    toastr.error("حجم فایل صفر بایت است");
+                    return;
+                }
+
+                $('#progressbarModal').modal({ backdrop: 'static', keyboard: false });
+
+                var formData = new FormData();
+                formData.append('file', $('#file')[0].files[0]);
+
+                $.ajax({
+                    xhr: function () {
+                        var xhr = new window.XMLHttpRequest();
+
+                        xhr.upload.addEventListener("progress", function (evt) {
+                            if (evt.lengthComputable) {
+                                var percentComplete = evt.loaded / evt.total;
+                                percentComplete = parseInt(percentComplete * 100);
+                                $('.progress-bar').width(percentComplete + '%');
+                                $('.progress-bar > i').html(percentComplete + '%');
+                            }
+                        }, false);
+
+                        return xhr;
+                    },
+                    url: 'http://192.168.10.235:81/api/file/upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (data) {
+                        name = data.name;
+                        console.log(data);
+                        $("#TblFile_Size").val(size); //in MB
+                        $("#TblFile_Name").val(name + "." + ext);
+                    },
+                    complete: function () {
+                        $("#dbForm").toggleClass("d-none");
+                        $("#uploadForm").toggleClass("d-none");
+                        $('#btnReleaseAll').toggleClass('d-none');
+                    }
+                });
+            }
+        </script>
+
+        <!-- Modal -->
+        <div class="modal fade" id="progressbarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">در حال بارگذاری</h5>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            تا ظاهر شدن دکمه بستن منتظر بمانید، فایل های حجیم پس از آپلود 100% زمانی برای انتقال در سرور نیاز دارند
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuemin="0" aria-valuemax="100"><i>0%</i></div>
+                        </div>
+                    </div>
+                    <a href="#" id="btnReleaseAll" class="d-none btn btn-primary btn-default btn-small" data-dismiss="modal">بستن &times;</a>
+                </div>
+            </div>
+        </div>
+        <!-- Modal -->
+
+        <form id="dbForm" method="post" class="d-none">
+            <input type="hidden" asp-for="TblFile.Size" class="form-control" value="0" />
+            <input type="hidden" asp-for="TblFile.Name" class="form-control" value="0" />
+
+            <div class="form-group">
+                <label asp-for="TblFile.ServerId" class="control-label">سرور</label>
+                <select asp-for="TblFile.ServerId" class="form-control" asp-items="ViewBag.ServerId"></select>
+                <span asp-validation-for="TblFile.ServerId" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.Description" class="control-label">توضیحات</label>
+                <textarea asp-for="TblFile.Description" class="form-control"></textarea>
+                <span asp-validation-for="TblFile.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <span class="ml-5">وضعیت فعال</span> <input class="form-check-input" asp-for="TblFile.Active" />
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <span class="ml-5">وضعیت حذف</span> <input class="form-check-input" asp-for="TblFile.IsDeleted" />
+                </label>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="ایجاد" class="btn btn-primary btn-block" />
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

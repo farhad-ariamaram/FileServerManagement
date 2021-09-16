@@ -1,0 +1,92 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+
+@if (Model.TblFile.IsDeleted == false)
+{
+    <h1>حذف</h1>
+
+    <h3>آیا از حذف فایل مطمئن می‌باشید؟</h3>
+    <div>
+        <dl class="row">
+            <dt class="col-sm-2">
+                نام فایل
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Name)
+            </dd>
+            <dt class="col-sm-2">
+                سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Server.Name)
+            </dd>
+            <dt class="col-sm-2">
+                توضیحات
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.TblFile.Description.Length > 50)
+                {
+                    @Model.TblFile.Description.Substring(0, 50)
+                }
+                else
+                {
+                    @Model.TblFile.Description
+                }
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="TblFile.Id" />
+            <input type="submit" value="حذف" class="btn btn-danger ml-1 mr-1" />
+            <a asp-page="./Index">انصراف</a>
+        </form>
+    </div>
+
+}
+else
+{
+    <h1>بازگرداندن</h1>
+
+    <h3>آیا از بازگرداندن فایل مطمئن می‌باشید؟</h3>
+    <div>
+        <dl class="row">
+            <dt class="col-sm-2">
+                نام فایل
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Name)
+            </dd>
+            <dt class="col-sm-2">
+                سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Server.Name)
+            </dd>
+            <dt class="col-sm-2">
+                توضیحات
+            </dt>
+            <dd class="col-sm-10">
+                @if (Model.TblFile.Description.Length > 50)
+                {
+                    @Model.TblFile.Description.Substring(0, 50)
+                }
+                else
+                {
+                    @Model.TblFile.Description
+                }
+            </dd>
+        </dl>
+
+        <form method="post">
+            <input type="hidden" asp-for="TblFile.Id" />
+            <input type="submit" value="بازگرداندن" class="btn btn-success ml-1 mr-1" />
+            <a asp-page="./Index">انصراف</a>
+        </form>
+    </div>
+
+}

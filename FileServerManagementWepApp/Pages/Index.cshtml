@@ -1,10 +1,133 @@
 ﻿@page
-@model IndexModel
+@model FileServerManagementWepApp.Pages.IndexModel
+
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Index";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1>لیست فایل ها</h1>
+
+<br />
+<div>
+    <form method="get">
+        <div class="row">
+            <label class="col-form-label">وضعیت &nbsp;</label>
+            <select asp-for="Status" class="form-control w-25" name="status">
+                <option value="0">فعال و حذف نشده</option>
+                <option value="1">غیرفعال شده</option>
+                <option value="2">حذف شده</option>
+            </select>
+            <button class="btn btn-primary mr-1" type="submit"><i class="fa fa-filter"></i></button>
+        </div>
+    </form>
 </div>
+<br />
+
+<p>
+    <a class="btn btn-success m-1" asp-page="Create"><i class="fa fa-plus"></i></a>
+    <a class="btn btn-success m-1" asp-page="ServerPage/Index"><i class="fa fa-server"></i></a>
+</p>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>
+                سیستم
+            </th>
+            <th>
+                زیر سیستم
+            </th>
+            <th>
+                نام فایل
+            </th>
+            <th>
+                فرمت فایل
+            </th>
+            <th>
+                حجم فایل
+            </th>
+            <th>
+                تاریخ ایجاد
+            </th>
+            <th>
+                توضیحات
+            </th>
+            <th>
+                رکورد
+            </th>
+            <th>
+                سرور
+            </th>
+            <th>
+                وضعیت فعال
+            </th>
+            <th>
+                وضعیت حذف
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TblFile)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.System)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SubSystem)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Extention)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Size)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Record)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Server.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsDeleted)
+            </td>
+            <td>
+                <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+
+                @*Delete*@
+                @if (item.IsDeleted == true)
+                {
+                    <a class="btn btn-success btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash-restore"></i></a>
+                    <a class="btn btn-danger btn-block" asp-page="./ForceDelete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
+                }
+                else
+                {
+                    <a class="btn btn-danger btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
+                }
+
+                @*Active*@
+                @if (item.Active == true)
+                {
+                    <a class="btn btn-danger btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                }
+                else
+                {
+                    <a class="btn btn-success btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

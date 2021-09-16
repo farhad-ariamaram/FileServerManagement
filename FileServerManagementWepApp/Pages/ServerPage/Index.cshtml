@@ -1,0 +1,94 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.ServerPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>سرور ها</h1>
+<br />
+<div>
+    <form method="get">
+        <div class="row">
+            <label class="col-form-label">وضعیت &nbsp;</label>
+            <select asp-for="Status" class="form-control w-25" name="status">
+                <option value="0">فعال </option>
+                <option value="1">غیرفعال </option>
+            </select>
+            <button class="btn btn-primary mr-1" type="submit"><i class="fa fa-filter"></i></button>
+        </div>
+    </form>
+</div>
+<br />
+<p>
+    <a class="btn btn-success" asp-page="Create"><i class="fa fa-plus"></i></a>
+</p>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>
+                نام سرور
+            </th>
+            <th>
+                آدرس سرور
+            </th>
+            <th>
+                ظرفیت سرور
+            </th>
+            <th>
+                ظرفیت استفاده شده
+            </th>
+            <th>
+                وضعیت سرور
+            </th>
+            <th>
+                اولویت سرور
+            </th>
+            <th>
+                اطلاعات ورود
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TblServer)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Address)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Capacity) GB
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Used) GB
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Active)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Priority)
+            </td>
+            <td>
+                user: @Html.DisplayFor(modelItem => item.ServerUsername) <br />pass: @Html.DisplayFor(modelItem => item.ServerPassword)
+            </td>
+            <td>
+                <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+                @if (item.Active == true)
+                {
+                    <a class="btn btn-danger btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                }
+                else
+                {
+                    <a class="btn btn-success btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                }
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-page="../Index"><i class="fa fa-backward"></i></a>

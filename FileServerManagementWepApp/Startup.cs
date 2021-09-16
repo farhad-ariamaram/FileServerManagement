@@ -1,5 +1,9 @@
+using FileServerManagementWepApp.Middleware;
+using FileServerManagementWepApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,13 +23,27 @@ namespace FileServerManagementWepApp
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<FileServerDBContext>(options =>
+            {
+                options.UseSqlServer(Configuration.GetConnectionString("CS"));
+            });
             services.AddRazorPages();
+            services.AddControllers();
+            services.AddSession();
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAllHeaders",
+                      builder =>
+                      {
+                          builder.AllowAnyOrigin()
+                                 .AllowAnyHeader()
+                                 .AllowAnyMethod();
+                      });
+            });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -37,6 +55,12 @@ namespace FileServerManagementWepApp
                 app.UseExceptionHandler("/Error");
             }
 
+            app.UseCors("AllowAllHeaders");
+
+            app.UseSession();
+
+            app.UseMiddleware<AuthenticationMiddleware>();
+
             app.UseStaticFiles();
 
             app.UseRouting();
@@ -46,6 +70,7 @@ namespace FileServerManagementWepApp
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();
+                endpoints.MapControllers();
             });
         }
     }
