@@ -43,56 +43,65 @@ namespace FileServerManagementWepApp.Pages
 
         public async Task<IActionResult> OnPostAsync(long? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
-
-            TblFile = await _context.TblFiles.FindAsync(id);
-
-            if (TblFile != null)
-            {
-                //REMOVE FROM SERVER
-                var sever = TblFile.Server.Address;
-                var name = TblFile.Name + "." + TblFile.Extention;
-                HttpClient _client = new HttpClient();
-                var del = await _client.GetAsync("hhtp://" + sever + "/api/file/delete/" + name);
-                if (!del.IsSuccessStatusCode)
+                if (id == null)
                 {
-                    ModelState.AddModelError("DeleteError","مشکل در حذف از سرور");
-                    return Page();
+                    return NotFound();
                 }
 
-                var size = TblFile.Size;
-                var server = TblFile.ServerId;
+                TblFile = await _context.TblFiles.FindAsync(id);
 
-                _context.TblFiles.Remove(TblFile);
-                await _context.SaveChangesAsync();
-
-                //LOG FORCE DELETE FILE
-                var logLogin = new TblLog
+                if (TblFile != null)
                 {
-                    UserId = int.Parse(HttpContext.Session.GetString("uid")),
-                    Datetime = DateTime.Now,
-                    Action = "ForceDelete-File",
-                    FileId = TblFile.Id
-                };
-                await _context.TblLogs.AddAsync(logLogin);
-                await _context.SaveChangesAsync();
+                    //REMOVE FROM SERVER
+                    var sever = await _context.TblServers.FindAsync(TblFile.ServerId);
+                    var name = TblFile.Name + "." + TblFile.Extention;
+                    HttpClient _client = new HttpClient();
+                    var del = await _client.GetAsync("http://" + sever.Address + "/api/file/delete/" + name);
+                    if (!del.IsSuccessStatusCode)
+                    {
+                        ModelState.AddModelError("DeleteError", "مشکل در حذف از سرور");
+                        return Page();
+                    }
 
-                _context.TblServers.Find(server).Used -= (size / 1024);
-                await _context.SaveChangesAsync();
+                    var size = TblFile.Size;
+                    var server = TblFile.ServerId;
 
-                var TargetServer = await _context.TblServers.FindAsync(server);
-                if (TargetServer.Capacity > TargetServer.Used + 5)
-                {
-                    TargetServer.Active = true;
+                    _context.TblFiles.Remove(TblFile);
                     await _context.SaveChangesAsync();
+
+                    //LOG FORCE DELETE FILE
+                    var logLogin = new TblLog
+                    {
+                        UserId = int.Parse(HttpContext.Session.GetString("uid")),
+                        Datetime = DateTime.Now,
+                        Action = "ForceDelete-File",
+                        FileId = TblFile.Id
+                    };
+                    await _context.TblLogs.AddAsync(logLogin);
+                    await _context.SaveChangesAsync();
+
+                    _context.TblServers.Find(server).Used -= size;
+                    await _context.SaveChangesAsync();
+
+                    var TargetServer = await _context.TblServers.FindAsync(server);
+                    if (TargetServer.Capacity > TargetServer.Used + 5)
+                    {
+                        TargetServer.Active = true;
+                        await _context.SaveChangesAsync();
+                    }
+
                 }
 
+                return RedirectToPage("./Index", new { status = 2 });
             }
-
-            return RedirectToPage("./Index" , new { status = 2 });
+            catch (Exception)
+            {
+                ModelState.AddModelError("DeleteError", "مشکل در حذف از سرور");
+                return Page();
+            }
+            
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using FileServerManagementWepApp.Models;
 using Microsoft.AspNetCore.Http;
+using System.Net.Http;
 
 namespace FileServerManagementWepApp.Pages
 {
@@ -52,14 +53,26 @@ namespace FileServerManagementWepApp.Pages
 
             try
             {
+                //SERVER USED
+                var server = await _context.TblServers.FindAsync(TblFile.ServerId);
+                var serverCapacity = server.Capacity;
+                var serverUsed = server.Used;
+                _context.TblServers.Find(TblFile.ServerId).Used += (TblFile.Size);
                 await _context.SaveChangesAsync();
+
+                //CHANGE SERVER ACTIVITY IF FULL
+                if (server.Capacity <= server.Used + 5)
+                {
+                    server.Active = false;
+                    await _context.SaveChangesAsync();
+                }
 
                 //LOG EDIT FILE
                 var logLogin = new TblLog
                 {
                     UserId = int.Parse(HttpContext.Session.GetString("uid")),
                     Datetime = DateTime.Now,
-                    Action = "Edit-File",
+                    Action = "CreateEdit-File",
                     FileId = TblFile.Id
                 };
                 await _context.TblLogs.AddAsync(logLogin);
@@ -67,6 +80,11 @@ namespace FileServerManagementWepApp.Pages
             }
             catch (DbUpdateConcurrencyException)
             {
+                //DELETE IF ERROR ECCOURD
+                var sever = await _context.TblServers.FindAsync(TblFile.ServerId);
+                var name = TblFile.Name + "." + TblFile.Extention;
+                HttpClient _client = new HttpClient();
+                var del = await _client.GetAsync("http://" + sever.Address + "/api/file/delete/" + name);
                 if (!TblFileExists(TblFile.Id))
                 {
                     return NotFound();
@@ -83,6 +101,20 @@ namespace FileServerManagementWepApp.Pages
         private bool TblFileExists(long id)
         {
             return _context.TblFiles.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> OnGetRemove(int serverId, string name, string ext, long id)
+        {
+            //DELETE IF ERROR ECCOURD
+            var sever = await _context.TblServers.FindAsync(serverId);
+            var fname = name + "." + ext;
+            HttpClient _client = new HttpClient();
+            var del = await _client.GetAsync("http://" + sever.Address + "/api/file/delete/" + fname);
+
+            var file = await _context.TblFiles.FindAsync(id);
+            _context.TblFiles.Remove(file);
+            await _context.SaveChangesAsync();
+            return RedirectToPage("./Index");
         }
     }
 }

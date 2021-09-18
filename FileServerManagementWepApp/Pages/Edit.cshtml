@@ -84,7 +84,7 @@
 </div>
 
 <div>
-    <a asp-page="./Index">بازگشت</a>
+    <a asp-page-handler="Remove" asp-route-id="@Model.TblFile.Id" asp-route-serverId="@Model.TblFile.ServerId" asp-route-ext="@Model.TblFile.Extention" asp-route-name="@Model.TblFile.Name">بازگشت</a>
 </div>
 
 @section Scripts {

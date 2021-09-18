@@ -30,11 +30,16 @@ namespace FileServerManagementWepApp.Controllers
                 return new JsonResult(new { data = "No server is active!" });
             }
 
+            if((server.Capacity-server.Used) < (double.Parse(size)/1024/1024))
+            {
+                return new JsonResult(new { data = "No space available!" });
+            }
+
             var file = new TblFile {
                 System = system,
                 SubSystem = subsystem,
                 Extention = ext,
-                Size = double.Parse(size),
+                Size = (double.Parse(size)/1024/1024),
                 Record = Int64.Parse(record),
                 CreatedDate = DateTime.Now,
                 ServerId = server.Id
@@ -68,7 +73,7 @@ namespace FileServerManagementWepApp.Controllers
             }
             catch (Exception e)
             {
-                return NotFound();
+                return NotFound(e.Message);
             }
         }
     }

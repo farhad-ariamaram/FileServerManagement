@@ -55,17 +55,14 @@ namespace FileServerManagementWepApp.Pages.ServerPage
 
             switch (HttpContext.Request.Form["sizeType"])
             {
-                case "KB":
-                    TblServer.Capacity /= 1048576;
-                    break;
                 case "MB":
-                    TblServer.Capacity /= 1024;
-                    break;
-                case "GB":
                     TblServer.Capacity *= 1;
                     break;
-                case "TB":
+                case "GB":
                     TblServer.Capacity *= 1024;
+                    break;
+                case "TB":
+                    TblServer.Capacity *= (1024*1024);
                     break;
                 default:
                     break;

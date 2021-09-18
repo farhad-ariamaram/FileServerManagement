@@ -106,6 +106,8 @@
             <td>
                 <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
 
+                <a class="btn btn-warning btn-block text-white" href="http://@(item.Server.Address)/api/file/download/@(item.Name).@(item.Extention)"><i class="fa fa-download"></i></a>
+
                 @*Delete*@
                 @if (item.IsDeleted == true)
                 {
