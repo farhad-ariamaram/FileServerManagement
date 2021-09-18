@@ -1,5 +1,6 @@
 using FileServerManagementWepApp.Middleware;
 using FileServerManagementWepApp.Models;
+using FileServerManagementWepApp.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -42,6 +43,7 @@ namespace FileServerManagementWepApp
                                  .AllowAnyMethod();
                       });
             });
+            services.AddSingleton<IGetAccessSingleton, GetAccess>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

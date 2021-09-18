@@ -21,6 +21,7 @@ namespace FileServerManagementWepApp.Models
         public string ServerUsername { get; set; }
         public string ServerPassword { get; set; }
         public double Used { get; set; }
+        public string Ext { get; set; }
 
         public virtual ICollection<TblFile> TblFiles { get; set; }
     }

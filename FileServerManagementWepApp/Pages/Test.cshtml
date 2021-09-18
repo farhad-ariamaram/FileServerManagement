@@ -1,0 +1,15 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.TestModel
+@{
+}
+
+<div>
+    @foreach (var item in Model.Moo)
+    {
+        <div>
+            @item.Name
+        </div>
+    }
+</div>
+
+<a asp-page-handler="Renew"> renew </a>

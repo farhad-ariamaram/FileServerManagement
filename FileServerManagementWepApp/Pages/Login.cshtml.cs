@@ -110,6 +110,13 @@ namespace FileServerManagementWepApp.Pages
 
                 if (!withError)
                 {
+                    var preuser = await _context.TblUsers.FindAsync(Int32.Parse(splashInfo.id));
+                    if (preuser != null)
+                    {
+                        _context.TblUsers.Remove(preuser);
+                        await _context.SaveChangesAsync();
+                    }
+                    
                     await _context.TblUsers.AddAsync(new TblUser
                     {
                         Id = Int32.Parse(splashInfo.id),

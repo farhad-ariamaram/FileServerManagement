@@ -9,6 +9,7 @@ using FileServerManagementWepApp.Models;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Net.Http;
+using FileServerManagementWepApp.Services;
 
 namespace FileServerManagementWepApp.Pages
 {
@@ -16,7 +17,7 @@ namespace FileServerManagementWepApp.Pages
     {
         private readonly FileServerManagementWepApp.Models.FileServerDBContext _context;
 
-        public IndexModel(FileServerManagementWepApp.Models.FileServerDBContext context)
+        public IndexModel(FileServerDBContext context)
         {
             _context = context;
         }

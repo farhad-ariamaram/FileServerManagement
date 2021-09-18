@@ -23,7 +23,7 @@ namespace FileServerManagementWepApp.Controllers
         [HttpGet("server")]
         public async Task<IActionResult> GetServer(string system,string subsystem,string ext,string size,string record)
         {
-            var server = await _contetx.TblServers.Where(a => a.Active).OrderBy(a => a.Priority).FirstOrDefaultAsync();
+            var server = await _contetx.TblServers.Where(a => a.Active && (string.IsNullOrEmpty(a.Ext) || a.Ext.Contains(ext))).OrderBy(a => a.Priority).FirstOrDefaultAsync();
 
             if (server == null)
             {

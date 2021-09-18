@@ -47,6 +47,9 @@
             <th>
                 اطلاعات ورود
             </th>
+            <th>
+                فرمت های قابل قبول
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -74,6 +77,9 @@
             </td>
             <td>
                 user: @Html.DisplayFor(modelItem => item.ServerUsername) <br />pass: @Html.DisplayFor(modelItem => item.ServerPassword)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ext)
             </td>
             <td>
                 <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
