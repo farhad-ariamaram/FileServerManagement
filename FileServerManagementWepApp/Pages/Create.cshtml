@@ -25,47 +25,75 @@
         </div>
 
         <script>
-            var system = "Private";
-            var subsystem = "Server";
-            var ext = "";
+            //Errors Number
+            //Code = "1"  , Msg = "Empty/Invalid File Type!" }
+            //Code = "2"  , Msg = "Empty/Invalid System!"
+            //Code = "3"  , Msg = "Empty/Invalid SubSystem!"
+            //Code = "4"  , Msg = "Zero byte file!"
+            //Code = "5"  , Msg = "No server Active!"
+            //Code = "6"  , Msg = "No space available!"
+            //Code = "7"  , Msg = "OK!"
+            //Code = "8"  , Msg =  e.Message
+            //Code = "9"  , Msg = "ManageServer not response"
+            //Code = "10" , Msg = "File not exist"
+
+            //ajax #1 inputs
+            var ManagerServerAddress = "192.168.10.247:5000";   //Remote Server Address
+            var system;
+            var subsystem;
+            var ext;
             var size = 0;
-            var recId = 0;
+            var record = 0;
+
+            //bullshit
             var serverAddress = "";
             var fileId = "";
             var formData = new FormData();
 
+            //ajax #1
             function fileUpload1() {
 
+                //preset
+                serverAddress = "";
+
+                //manual
+                system = 1;     //System_Id
+                subsystem = 1;  //SubSystem_Id
+                record = 1;     //Record
+
+                //auto
                 size = ($('#file')[0].files[0].size);
                 const lastDot = $('#file')[0].files[0].name.lastIndexOf('.');
                 ext = $('#file')[0].files[0].name.substring(lastDot + 1);
 
+                //Zero byte file
                 if (size == 0) {
-                    toastr.error("zero byte file");
+                    alert("zero byte file");
                     return;
                 }
 
+                //ajax to ManageServer to get upload server address
                 $.ajax({
-                    url: 'http://@Request.Headers["host"]/api/server/server',
+                    url: 'http://' + ManagerServerAddress + '/api/server',
                     type: 'GET',
                     data: {
                         system: system,
                         subsystem: subsystem,
                         ext: ext,
                         size: size,
-                        record: recId
+                        record: record
                     },
                     success: function (data) {
                         console.log(data);
                         if (data.data.server == null) {
-                            toastr.error(data.data);
+                            alert("Code: " + data.data.code + " - Message: " + data.data.msg);
                             return;
                         }
                         serverAddress = data.data.server;
                         fileId = data.data.id;
                     },
                     error: function (request, status, error) {
-                        toastr.error("Error - Manager server did not response");
+                        alert("Error - Manager server did not response");
                         return;
                     },
                     complete: function () {
@@ -74,7 +102,11 @@
                 });
             }
 
+            //ajax #2
             function fileUpload2() {
+                if (serverAddress == "") {
+                    return;
+                }
 
                 $('#progressbarModal').modal({ backdrop: 'static', keyboard: false });
 
@@ -102,18 +134,20 @@
                     processData: false,
                     contentType: false,
                     success: function (data) {
+                        if (data.data.code != "7") {
+                            alert("Code: " + data.data.code + " - Message: " + data.data.msg);
+                            return;
+                        }
                         $('#btnReleaseAll').toggleClass('d-none');
                     },
                     error: function (request, status, error) {
-                        toastr.error("Error - Server did not response");
-                        window.setTimeout(function () {
-                            window.location.replace('./Index');
-                        }, 2000);
+                        alert("Error - Server did not response");
                         return;
                     }
                 });
             }
         </script>
+
 
         <!-- Modal -->
         <div class="modal fade" id="progressbarModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

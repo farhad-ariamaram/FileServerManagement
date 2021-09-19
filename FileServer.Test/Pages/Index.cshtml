@@ -37,41 +37,56 @@
 <!-- Modal -->
 
 <script>
+    //ajax #1 inputs
     var ManagerServerAddress = "192.168.10.247:5000";
-    var system = "Private";
-    var subsystem = "Server";
-    var ext = "";
+    var system;
+    var subsystem;
+    var ext;
     var size = 0;
-    var recId = 0;
+    var record = 0;
+
+    //bullshit
     var serverAddress = "";
     var fileId = "";
     var formData = new FormData();
 
+    //ajax #1
     function fileUpload1() {
 
+        //preset
+        serverAddress = "";
+
+        //manual
+        system = 2;
+        subsystem = 2;
+        record = 1;
+
+        //auto
         size = ($('#file')[0].files[0].size);
         const lastDot = $('#file')[0].files[0].name.lastIndexOf('.');
         ext = $('#file')[0].files[0].name.substring(lastDot + 1);
 
+        //Zero byte file
         if (size == 0) {
             alert("zero byte file");
             return;
         }
 
+        //ajax to ManageServer to get upload server address
         $.ajax({
-            url: 'http://' + ManagerServerAddress + '/api/server/server',
+            url: 'http://' + ManagerServerAddress + '/api/server',
             type: 'GET',
             data: {
                 system: system,
                 subsystem: subsystem,
                 ext: ext,
                 size: size,
-                record: recId
+                record: record
             },
             success: function (data) {
                 console.log(data);
                 if (data.data.server == null) {
-                    alert(data.data);
+                    alert("Code: " + data.data.code + " - Message: " + data.data.msg);
                     return;
                 }
                 serverAddress = data.data.server;
@@ -87,7 +102,11 @@
         });
     }
 
+    //ajax #2
     function fileUpload2() {
+        if (serverAddress == "") {
+            return;
+        }
 
         $('#progressbarModal').modal({ backdrop: 'static', keyboard: false });
 

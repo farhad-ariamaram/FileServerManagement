@@ -40,7 +40,7 @@ namespace FileLoaderWebApi.Controllers
                 else //Zero Byte File
                 {
                     await client.GetAsync($"{Configuration["Address:MANAGER_SERVER_ADDRESS"]}/{name}/{model.id}/false");
-                    return new JsonResult(new { data = new { result = "Zero byte file", status = false } });
+                    return new JsonResult(new { data = new { Code = "4", Msg = "Zero byte file!", status = false } });
                 }
 
                 //Tell ManageServer File Upload Complete
@@ -50,19 +50,19 @@ namespace FileLoaderWebApi.Controllers
                     var res = await client.GetAsync($"{Configuration["Address:MANAGER_SERVER_ADDRESS"]}/{name}/{model.id}/true");
                     if (!res.IsSuccessStatusCode)
                     {
-                        return new JsonResult(new { data = new { result = "ManageServer not response", status = false } });
+                        return new JsonResult(new { data = new { Code = "9", Msg = "ManageServer not response", status = false } });
                     }
                 }
                 catch (Exception e)
                 {
-                    return new JsonResult(new { data = new { result = e.Message, status = false } });
+                    return new JsonResult(new { data = new { Code = "8", Msg = e.Message, status = false } });
                 }
 
-                return new JsonResult(new { data = new { result = "Complete Successfully", status = true } });
+                return new JsonResult(new { data = new { Code = "7", Msg = "OK!", status = true } });
             }
             catch (Exception e)
             {
-                return new JsonResult(new { data = new { result = e.Message, status = false } });
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message, status = false } });
             }
 
         }
@@ -75,13 +75,13 @@ namespace FileLoaderWebApi.Controllers
                 Stream stream = new FileStream($"files/{name}", FileMode.OpenOrCreate);
 
                 if (stream == null)
-                    return NotFound();
+                    return new JsonResult(new { data = new { Code = "10", Msg = "File not exist" } });
 
                 return File(stream, "application/octet-stream");
             }
             catch (Exception e)
             {
-                return Ok(new { e.Message });
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
 
         }
@@ -93,11 +93,11 @@ namespace FileLoaderWebApi.Controllers
             {
                 System.IO.File.Delete($"files/{name}");
 
-                return Ok(true);
+                return new JsonResult(new { data = new { Code = "7", Msg = "OK!" } });
             }
             catch (Exception e)
             {
-                return Ok(new { e.Message });
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
 
         }
@@ -106,7 +106,7 @@ namespace FileLoaderWebApi.Controllers
         {
             public IFormFile file { set; get; }
             public string id { set; get; }
-            
+
         }
     }
 

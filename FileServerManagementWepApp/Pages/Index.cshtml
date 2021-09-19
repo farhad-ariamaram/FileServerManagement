@@ -71,16 +71,16 @@
         {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.System)
+                @Html.DisplayFor(modelItem => item.System.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.SubSystem)
+                @Html.DisplayFor(modelItem => item.SubSystem.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Extention)
+                @Html.DisplayFor(modelItem => item.FileType.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Size)
@@ -105,8 +105,6 @@
             </td>
             <td>
                 <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
-
-                <a class="btn btn-warning btn-block text-white" href="http://@(item.Server.Address)/api/file/download/@(item.Name).@(item.Extention)"><i class="fa fa-download"></i></a>
 
                 @*Delete*@
                 @if (item.IsDeleted == true)

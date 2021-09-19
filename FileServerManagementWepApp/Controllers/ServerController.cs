@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FileServerManagementWepApp.Controllers
 {
-    [Route("api/server")]
+    [Route("api")]
     [ApiController]
     public class ServerController : ControllerBase
     {
@@ -19,35 +19,116 @@ namespace FileServerManagementWepApp.Controllers
         {
             _contetx = contetx;
         }
-         
+
         [HttpGet("server")]
-        public async Task<IActionResult> GetServer(string system,string subsystem,string ext,string size,string record)
+        public async Task<IActionResult> GetServer(string system, string subsystem, string ext, string size, string record)
         {
-            var server = await _contetx.TblServers.Where(a => a.Active && (string.IsNullOrEmpty(a.Ext) || a.Ext.Contains(ext))).OrderBy(a => a.Priority).FirstOrDefaultAsync();
-
-            if (server == null)
+            try
             {
-                return new JsonResult(new { data = "No server is active!" });
+                //Check file type and get FileTypeId from it
+                var fileType = await _contetx.TblFileTypes.Where(a => a.Title == ext).FirstOrDefaultAsync();
+                var fileTypeId = 0;
+                if (fileType == null)
+                {
+                    return new JsonResult(new { data = new { Code = "1", Msg = "Empty/Invalid File Type!" } });
+                }
+                else
+                {
+                    fileTypeId = fileType.Id;
+                }
+
+                //Check system and get SystemId from it
+                var systemm = await _contetx.TblSystems.Where(a => a.Id == int.Parse(system)).FirstOrDefaultAsync();
+                var systemmId = 0;
+                if (systemm == null)
+                {
+                    return new JsonResult(new { data = new { Code = "2", Msg = "Empty/Invalid System!" } });
+                }
+                else
+                {
+                    systemmId = systemm.Id;
+                }
+
+                //Check subSystem and get subSystemId from it
+                var subSystemm = await _contetx.TblSubSystems.Where(a => a.Id == int.Parse(subsystem)).FirstOrDefaultAsync();
+                var subSystemmId = 0;
+                if (subSystemm == null)
+                {
+                    return new JsonResult(new { data = new { Code = "3", Msg = "Empty/Invalid SubSystem!" } });
+                }
+                else
+                {
+                    subSystemmId = subSystemm.Id;
+                }
+
+                //Check subSystem and get subSystemId from it
+                if (string.IsNullOrEmpty(size))
+                {
+                    return new JsonResult(new { data = new { Code = "4", Msg = "Zero byte file!" } });
+                }
+                else
+                {
+                    subSystemmId = subSystemm.Id;
+                }
+
+                //Find servers based on file attributes
+                var access = await _contetx.TblAccesses
+                    .Where(a => (a.FileTypeId == fileTypeId && a.SubSystemId == subSystemmId)
+                              || (a.FileTypeId == fileTypeId && a.SubSystemId == null)
+                              || (a.FileTypeId == null && a.SubSystemId == subSystemmId))
+                    .Select(b => b.ServerId)
+                    .ToArrayAsync();
+                var server = await _contetx.TblServers
+                    .Where(a => access.Contains(a.Id) && a.Active)
+                    .OrderBy(a => a.Priority)
+                    .ToListAsync();
+
+                //Check if no server available based on file extention and subsystem
+                if (server.Count < 1)
+                {
+                    return new JsonResult(new { data = new { Code = "5", Msg = "No server Active!" } });
+                }
+
+                //Check if no server available based on file size
+                TblServer selectedServer = null;
+                for (int i = 0; i < server.Count(); i++)
+                {
+                    if ((server[i].Capacity - server[i].Used) < (double.Parse(size) / 1024 / 1024))
+                    {
+                        continue;
+                    }
+                    else
+                    {
+                        selectedServer = server[i];
+                    }
+                }
+                if (selectedServer == null)
+                {
+                    return new JsonResult(new { data = new { Code = "6", Msg = "No space available!" } });
+                }
+
+                //Create a record on database
+                var file = new TblFile
+                {
+                    SystemId = systemmId,
+                    SubSystemId = subSystemmId,
+                    FileTypeId = fileTypeId,
+                    Size = (double.Parse(size) / 1024 / 1024),
+                    Record = Int64.Parse(record),
+                    CreatedDate = DateTime.Now,
+                    ServerId = selectedServer.Id
+                };
+                await _contetx.TblFiles.AddAsync(file);
+                await _contetx.SaveChangesAsync();
+
+                //Return Server.Address and File.Id
+                return new JsonResult(new { data = new { Code = "7", Msg = "OK!", server = selectedServer.Address, id = file.Id } });
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
 
-            if((server.Capacity-server.Used) < (double.Parse(size)/1024/1024))
-            {
-                return new JsonResult(new { data = "No space available!" });
-            }
-
-            var file = new TblFile {
-                System = system,
-                SubSystem = subsystem,
-                Extention = ext,
-                Size = (double.Parse(size)/1024/1024),
-                Record = Int64.Parse(record),
-                CreatedDate = DateTime.Now,
-                ServerId = server.Id
-            };
-            await _contetx.TblFiles.AddAsync(file);
-            await _contetx.SaveChangesAsync();
-
-            return new JsonResult(new { data = new { server = server.Address , id = file.Id } });
         }
 
         [HttpGet("result/{name}/{id}/{status}")]
@@ -61,6 +142,9 @@ namespace FileServerManagementWepApp.Controllers
                 {
                     file.Name = name;
                     file.IsComplete = true;
+
+                    var server = await _contetx.TblServers.FindAsync(file.ServerId);
+                    server.Used += file.Size;
                 }
                 else
                 {
@@ -69,11 +153,11 @@ namespace FileServerManagementWepApp.Controllers
 
                 await _contetx.SaveChangesAsync();
 
-                return Ok(true);
+                return new JsonResult(new { data = new { Code = "7", Msg = "OK!" } });
             }
             catch (Exception e)
             {
-                return NotFound(e.Message);
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
         }
     }

@@ -22,14 +22,12 @@ namespace FileServerManagementWepApp.Pages
 
         public IActionResult OnGet()
         {
-            // ViewBag contains controller-requested services
             Moo = _singletonGetAccess.GetAccess;
             return Page();
         }
 
         public IActionResult OnGetRenew()
         {
-            // ViewBag contains controller-requested services
             _singletonGetAccess.Renew();
             return Page();
         }

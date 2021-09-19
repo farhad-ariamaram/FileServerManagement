@@ -17,9 +17,13 @@ namespace FileServerManagementWepApp.Models
         {
         }
 
+        public virtual DbSet<TblAccess> TblAccesses { get; set; }
         public virtual DbSet<TblFile> TblFiles { get; set; }
+        public virtual DbSet<TblFileType> TblFileTypes { get; set; }
         public virtual DbSet<TblLog> TblLogs { get; set; }
         public virtual DbSet<TblServer> TblServers { get; set; }
+        public virtual DbSet<TblSubSystem> TblSubSystems { get; set; }
+        public virtual DbSet<TblSystem> TblSystems { get; set; }
         public virtual DbSet<TblUser> TblUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -33,6 +37,33 @@ namespace FileServerManagementWepApp.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
+            modelBuilder.Entity<TblAccess>(entity =>
+            {
+                entity.ToTable("TblAccess");
+
+                entity.Property(e => e.FileTypeId).HasColumnName("FileType_Id");
+
+                entity.Property(e => e.ServerId).HasColumnName("Server_Id");
+
+                entity.Property(e => e.SubSystemId).HasColumnName("SubSystem_Id");
+
+                entity.HasOne(d => d.FileType)
+                    .WithMany(p => p.TblAccesses)
+                    .HasForeignKey(d => d.FileTypeId)
+                    .HasConstraintName("FK_TblAccess_TblFileType");
+
+                entity.HasOne(d => d.Server)
+                    .WithMany(p => p.TblAccesses)
+                    .HasForeignKey(d => d.ServerId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TblAccess_TblServer");
+
+                entity.HasOne(d => d.SubSystem)
+                    .WithMany(p => p.TblAccesses)
+                    .HasForeignKey(d => d.SubSystemId)
+                    .HasConstraintName("FK_TblAccess_TblSubSystem");
+            });
 
             modelBuilder.Entity<TblFile>(entity =>
             {
@@ -48,21 +79,45 @@ namespace FileServerManagementWepApp.Models
 
                 entity.Property(e => e.Description).HasMaxLength(4000);
 
-                entity.Property(e => e.Extention).HasMaxLength(10);
+                entity.Property(e => e.FileTypeId).HasColumnName("FileType_Id");
 
                 entity.Property(e => e.Name).HasMaxLength(500);
 
                 entity.Property(e => e.ServerId).HasColumnName("Server_Id");
 
-                entity.Property(e => e.SubSystem).HasMaxLength(500);
+                entity.Property(e => e.SubSystemId).HasColumnName("SubSystem_Id");
 
-                entity.Property(e => e.System).HasMaxLength(500);
+                entity.Property(e => e.SystemId).HasColumnName("System_Id");
+
+                entity.HasOne(d => d.FileType)
+                    .WithMany(p => p.TblFiles)
+                    .HasForeignKey(d => d.FileTypeId)
+                    .HasConstraintName("FK_TblFile_TblFileType");
 
                 entity.HasOne(d => d.Server)
                     .WithMany(p => p.TblFiles)
                     .HasForeignKey(d => d.ServerId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_TblFile_TblServer");
+
+                entity.HasOne(d => d.SubSystem)
+                    .WithMany(p => p.TblFiles)
+                    .HasForeignKey(d => d.SubSystemId)
+                    .HasConstraintName("FK_TblFile_TblSubSystem");
+
+                entity.HasOne(d => d.System)
+                    .WithMany(p => p.TblFiles)
+                    .HasForeignKey(d => d.SystemId)
+                    .HasConstraintName("FK_TblFile_TblSystem");
+            });
+
+            modelBuilder.Entity<TblFileType>(entity =>
+            {
+                entity.ToTable("TblFileType");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(500);
             });
 
             modelBuilder.Entity<TblLog>(entity =>
@@ -91,15 +146,39 @@ namespace FileServerManagementWepApp.Models
 
                 entity.Property(e => e.Address).HasMaxLength(2000);
 
-                entity.Property(e => e.Ext)
-                    .HasMaxLength(500)
-                    .HasColumnName("ext");
-
                 entity.Property(e => e.Name).HasMaxLength(150);
 
                 entity.Property(e => e.ServerPassword).HasMaxLength(150);
 
                 entity.Property(e => e.ServerUsername).HasMaxLength(150);
+            });
+
+            modelBuilder.Entity<TblSubSystem>(entity =>
+            {
+                entity.ToTable("TblSubSystem");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
+                entity.HasOne(d => d.System)
+                    .WithMany(p => p.TblSubSystems)
+                    .HasForeignKey(d => d.SystemId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_TblSubSystem_TblSystem");
+            });
+
+            modelBuilder.Entity<TblSystem>(entity =>
+            {
+                entity.ToTable("TblSystem");
+
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(200);
             });
 
             modelBuilder.Entity<TblUser>(entity =>

@@ -14,7 +14,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="TblFile.Id" />
             <input type="hidden" asp-for="TblFile.IsComplete" />
-            <input type="hidden" asp-for="TblFile.Extention" />
             <input type="hidden" asp-for="TblFile.Size" />
             <input type="hidden" asp-for="TblFile.CreatedDate" />
             <input type="hidden" asp-for="TblFile.ServerId" />
@@ -52,11 +51,6 @@
                 </label>
             </div>
             <div class="form-group">
-                <label asp-for="TblFile.Extention" class="control-label">فرمت فایل</label>
-                <input asp-for="TblFile.Extention" class="form-control" disabled />
-                <span asp-validation-for="TblFile.Extention" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="TblFile.Size" class="control-label">حجم فایل</label>
                 <input asp-for="TblFile.Size" class="form-control" disabled />
                 <span asp-validation-for="TblFile.Size" class="text-danger"></span>
@@ -84,7 +78,7 @@
 </div>
 
 <div>
-    <a asp-page-handler="Remove" asp-route-id="@Model.TblFile.Id" asp-route-serverId="@Model.TblFile.ServerId" asp-route-ext="@Model.TblFile.Extention" asp-route-name="@Model.TblFile.Name">بازگشت</a>
+    <a asp-page-handler="Remove" asp-route-id="@Model.TblFile.Id" asp-route-serverId="@Model.TblFile.ServerId" asp-route-name="@Model.TblFile.Name">بازگشت</a>
 </div>
 
 @section Scripts {

@@ -32,7 +32,9 @@ namespace FileServerManagementWepApp.Pages
             }
 
             TblFile = await _context.TblFiles
-                .Include(t => t.Server).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(t => t.Server)
+                .Include(t=>t.FileType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (TblFile == null)
             {
@@ -82,7 +84,7 @@ namespace FileServerManagementWepApp.Pages
             {
                 //DELETE IF ERROR ECCOURD
                 var sever = await _context.TblServers.FindAsync(TblFile.ServerId);
-                var name = TblFile.Name + "." + TblFile.Extention;
+                var name = TblFile.Name + "." + TblFile.FileType.Title;
                 HttpClient _client = new HttpClient();
                 var del = await _client.GetAsync("http://" + sever.Address + "/api/file/delete/" + name);
                 if (!TblFileExists(TblFile.Id))

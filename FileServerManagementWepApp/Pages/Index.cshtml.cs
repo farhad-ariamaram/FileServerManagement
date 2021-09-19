@@ -22,6 +22,7 @@ namespace FileServerManagementWepApp.Pages
             _context = context;
         }
 
+        public IQueryable<TblFile> TblFileIQ { get; set; }
         public IList<TblFile> TblFile { get; set; }
 
         public int Status { get; set; }
@@ -29,26 +30,28 @@ namespace FileServerManagementWepApp.Pages
         public async Task OnGetAsync(int status = 0)
         {
 
-            TblFile = await _context.TblFiles
+            TblFileIQ = _context.TblFiles
                     .Include(t => t.Server)
-                    .ToListAsync();
+                    .Include(t => t.System)
+                    .Include(t => t.SubSystem)
+                    .Include(t => t.FileType);
 
             Status = status;
 
-            if (status == 0)
+            switch (status)
             {
-                TblFile = await _context.TblFiles
-                .Include(t => t.Server).Where(a => a.Active == true && a.IsDeleted == false).ToListAsync();
-            }
-            else if (status == 1)
-            {
-                TblFile = await _context.TblFiles
-                .Include(t => t.Server).Where(a => a.Active == false).ToListAsync();
-            }
-            else if (status == 2)
-            {
-                TblFile = await _context.TblFiles
-                .Include(t => t.Server).Where(a => a.IsDeleted == true).ToListAsync();
+                case 0:
+                    TblFile = await TblFileIQ.Where(a => a.Active == true && a.IsDeleted == false).ToListAsync();
+                    break;
+                case 1:
+                    TblFile = await TblFileIQ.Where(a => a.Active == false).ToListAsync();
+                    break;
+                case 2:
+                    TblFile = await TblFileIQ.Where(a => a.IsDeleted == true).ToListAsync();
+                    break;
+                default:
+                    TblFile = await TblFileIQ.Where(a => a.Active == true && a.IsDeleted == false).ToListAsync();
+                    break;
             }
         }
     }
