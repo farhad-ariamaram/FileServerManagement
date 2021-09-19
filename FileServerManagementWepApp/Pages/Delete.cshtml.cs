@@ -30,7 +30,11 @@ namespace FileServerManagementWepApp.Pages
             }
 
             TblFile = await _context.TblFiles
-                .Include(t => t.Server).FirstOrDefaultAsync(m => m.Id == id);
+                .Include(t => t.Server)
+                .Include(t => t.System)
+                .Include(t => t.SubSystem)
+                .Include(t => t.FileType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
             if (TblFile == null)
             {

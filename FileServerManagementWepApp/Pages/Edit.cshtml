@@ -13,21 +13,14 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="TblFile.Id" />
-            <input type="hidden" asp-for="TblFile.IsComplete" />
+            <input type="hidden" asp-for="TblFile.SystemId" />
+            <input type="hidden" asp-for="TblFile.SubSystemId" />
+            <input type="hidden" asp-for="TblFile.FileTypeId" />
             <input type="hidden" asp-for="TblFile.Size" />
             <input type="hidden" asp-for="TblFile.CreatedDate" />
             <input type="hidden" asp-for="TblFile.ServerId" />
+            <input type="hidden" asp-for="TblFile.IsComplete" />
             <input type="hidden" asp-for="TblFile.Name" />
-            <div class="form-group">
-                <label asp-for="TblFile.System" class="control-label">سیستم</label>
-                <input asp-for="TblFile.System" class="form-control" />
-                <span asp-validation-for="TblFile.System" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TblFile.SubSystem" class="control-label">زیرسیستم</label>
-                <input asp-for="TblFile.SubSystem" class="form-control" />
-                <span asp-validation-for="TblFile.SubSystem" class="text-danger"></span>
-            </div>
             <div class="form-group">
                 <label asp-for="TblFile.Record" class="control-label">رکورد</label>
                 <input asp-for="TblFile.Record" class="form-control" />
@@ -38,37 +31,44 @@
                 <input asp-for="TblFile.Description" class="form-control" />
                 <span asp-validation-for="TblFile.Description" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    وضعیت فعال
-                    <input class="form-check-input" asp-for="TblFile.Active" />
-                </label>
+            <div class="form-inline form-check">
+                <label class="form-check-label">وضعیت فعال</label>
+                <input class="form-check-input mr-3" asp-for="TblFile.Active" />
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    وضعیت حذف
-                    <input class="form-check-input" asp-for="TblFile.IsDeleted" />
-                </label>
+            <br />
+            <div class="form-inline form-check">
+                <label class="form-check-label">وضعیت حذف</label>
+                <input class="form-check-input mr-3" asp-for="TblFile.IsDeleted" />
             </div>
-            <div class="form-group">
-                <label asp-for="TblFile.Size" class="control-label">حجم فایل</label>
-                <input asp-for="TblFile.Size" class="form-control" disabled />
-                <span asp-validation-for="TblFile.Size" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TblFile.CreatedDate" class="control-label">تاریخ ایجاد</label>
-                <input asp-for="TblFile.CreatedDate" class="form-control" disabled />
-                <span asp-validation-for="TblFile.CreatedDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="TblFile.ServerId" class="control-label">آدرس سرور</label>
-                <select asp-for="TblFile.ServerId" class="form-control" asp-items="ViewBag.ServerId" disabled></select>
-                <span asp-validation-for="TblFile.ServerId" class="text-danger"></span>
-            </div>
+            <br />
             <div class="form-group">
                 <label asp-for="TblFile.Name" class="control-label">نام فایل</label>
                 <input asp-for="TblFile.Name" class="form-control" disabled />
                 <span asp-validation-for="TblFile.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.FileTypeId" class="control-label">نوع فایل</label>
+                <input asp-for="TblFile.FileType.Title" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.Size" class="control-label">حجم فایل (MB)</label>
+                <input asp-for="TblFile.Size" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.CreatedDate" class="control-label">تاریخ ایجاد</label>
+                <input asp-for="TblFile.CreatedDate" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.ServerId" class="control-label">آدرس سرور</label>
+                <select asp-for="TblFile.ServerId" class="form-control" asp-items="ViewBag.ServerId" disabled></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.SystemId" class="control-label">سیستم</label>
+                <input asp-for="TblFile.System.Title" class="form-control" disabled />
+            </div>
+            <div class="form-group">
+                <label asp-for="TblFile.SubSystemId" class="control-label">زیر سیستم</label>
+                <input asp-for="TblFile.SubSystem.Title" class="form-control" disabled />
             </div>
             <div class="form-group">
                 <input type="submit" value="ذخیره" class="btn btn-primary" />

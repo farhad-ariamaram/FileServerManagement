@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace FileServerManagementWepApp.Pages
 {
@@ -32,6 +33,8 @@ namespace FileServerManagementWepApp.Pages
 
             TblFile = await _context.TblFiles
                 .Include(t => t.Server)
+                .Include(t => t.System)
+                .Include(t => t.SubSystem)
                 .Include(t => t.FileType)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -51,7 +54,12 @@ namespace FileServerManagementWepApp.Pages
                     return NotFound();
                 }
 
-                TblFile = await _context.TblFiles.FindAsync(id);
+                TblFile = await _context.TblFiles
+                .Include(t => t.Server)
+                .Include(t => t.System)
+                .Include(t => t.SubSystem)
+                .Include(t => t.FileType)
+                .FirstOrDefaultAsync(m => m.Id == id);
 
                 if (TblFile != null)
                 {
@@ -62,7 +70,9 @@ namespace FileServerManagementWepApp.Pages
                     var del = await _client.GetAsync("http://" + sever.Address + "/api/file/delete/" + name);
                     if (!del.IsSuccessStatusCode)
                     {
-                        ModelState.AddModelError("DeleteError", "مشکل در حذف از سرور");
+                        var data = await del.Content.ReadAsStringAsync();
+                        var result = JsonConvert.DeserializeObject(data);
+                        ModelState.AddModelError("DeleteError", "مشکل در حذف از سرور" + data);
                         return Page();
                     }
 
@@ -70,6 +80,11 @@ namespace FileServerManagementWepApp.Pages
                     var server = TblFile.ServerId;
 
                     _context.TblFiles.Remove(TblFile);
+                    await _context.SaveChangesAsync();
+
+                    //Reduce server used
+                    var s = await _context.TblServers.FindAsync(server);
+                    s.Used -= size;
                     await _context.SaveChangesAsync();
 
                     //LOG FORCE DELETE FILE
@@ -81,9 +96,6 @@ namespace FileServerManagementWepApp.Pages
                         FileId = TblFile.Id
                     };
                     await _context.TblLogs.AddAsync(logLogin);
-                    await _context.SaveChangesAsync();
-
-                    _context.TblServers.Find(server).Used -= size;
                     await _context.SaveChangesAsync();
 
                     var TargetServer = await _context.TblServers.FindAsync(server);
@@ -102,7 +114,7 @@ namespace FileServerManagementWepApp.Pages
                 ModelState.AddModelError("DeleteError", "مشکل در حذف از سرور");
                 return Page();
             }
-            
+
         }
     }
 }

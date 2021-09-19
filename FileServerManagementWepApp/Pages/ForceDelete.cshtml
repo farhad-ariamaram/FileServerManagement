@@ -20,6 +20,24 @@
             @Html.DisplayFor(model => model.TblFile.Name)
         </dd>
         <dt class="col-sm-2">
+            سیستم
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblFile.System.Title)
+        </dd>
+        <dt class="col-sm-2">
+            زیر سیستم
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblFile.SubSystem.Title)
+        </dd>
+        <dt class="col-sm-2">
+            زیر سیستم
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblFile.FileType.Title)
+        </dd>
+        <dt class="col-sm-2">
             حجم فایل
         </dt>
         <dd class="col-sm-10">
@@ -29,14 +47,7 @@
             توضیحات
         </dt>
         <dd class="col-sm-10">
-            @if (Model.TblFile.Description != null && Model.TblFile.Description.Length > 50)
-            {
-                @Model.TblFile.Description.Substring(0, 50)
-            }
-            else
-            {
-                @Html.DisplayFor(model => model.TblFile.Description)
-            }
+            @Html.DisplayFor(model => model.TblFile.Description)
         </dd>
         <dt class="col-sm-2">
             سرور
@@ -48,19 +59,8 @@
 
     <form method="post" id="myForm">
         <input type="hidden" asp-for="TblFile.Id" />
-        <input type="submit" class="d-none" name="submitt" />
+        <input type="submit" class="btn btn-danger ml-1 mr-1" name="sub" value="حذف"/>
     </form>
-    <a class="btn btn-danger ml-1 mr-1" onclick="deletefunc()"><i class="fa fa-trash"></i></a>
     <a asp-page="./Index">انصراف</a>
 
 </div>
-
-@section Scripts{
-
-    <script>
-        function deletefunc() {
-            fetch('http://@(Model.TblFile.Server.Address)/api/file/delete/@Model.TblFile.Name')
-                .then(document.getElementById("myForm").submit());
-        }
-    </script>
-}

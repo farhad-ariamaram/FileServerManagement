@@ -143,6 +143,7 @@ namespace FileServerManagementWepApp.Controllers
                     file.Name = name;
                     file.IsComplete = true;
 
+                    //INCREASE SERVER.USED
                     var server = await _contetx.TblServers.FindAsync(file.ServerId);
                     server.Used += file.Size;
                 }

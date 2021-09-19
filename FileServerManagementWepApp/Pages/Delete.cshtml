@@ -20,23 +20,40 @@
                 @Html.DisplayFor(model => model.TblFile.Name)
             </dd>
             <dt class="col-sm-2">
-                سرور
+                سیستم
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.TblFile.Server.Name)
+                @Html.DisplayFor(model => model.TblFile.System.Title)
+            </dd>
+            <dt class="col-sm-2">
+                زیر سیستم
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.SubSystem.Title)
+            </dd>
+            <dt class="col-sm-2">
+                زیر سیستم
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.FileType.Title)
+            </dd>
+            <dt class="col-sm-2">
+                حجم فایل
+            </dt>
+            <dd class="col-sm-10">
+                <div dir="ltr"> @Html.DisplayFor(model => model.TblFile.Size) MB</div>
             </dd>
             <dt class="col-sm-2">
                 توضیحات
             </dt>
             <dd class="col-sm-10">
-                @if (Model.TblFile.Description != null && Model.TblFile.Description.Length > 50)
-                {
-                    @Model.TblFile.Description.Substring(0, 50)
-                }
-                else
-                {
-                    
-                }
+                @Html.DisplayFor(model => model.TblFile.Description)
+            </dd>
+            <dt class="col-sm-2">
+                سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Server.Name)
             </dd>
         </dl>
 
@@ -62,23 +79,40 @@ else
                 @Html.DisplayFor(model => model.TblFile.Name)
             </dd>
             <dt class="col-sm-2">
-                سرور
+                سیستم
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.TblFile.Server.Name)
+                @Html.DisplayFor(model => model.TblFile.System.Title)
+            </dd>
+            <dt class="col-sm-2">
+                زیر سیستم
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.SubSystem.Title)
+            </dd>
+            <dt class="col-sm-2">
+                زیر سیستم
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.FileType.Title)
+            </dd>
+            <dt class="col-sm-2">
+                حجم فایل
+            </dt>
+            <dd class="col-sm-10">
+                <div dir="ltr"> @Html.DisplayFor(model => model.TblFile.Size) MB</div>
             </dd>
             <dt class="col-sm-2">
                 توضیحات
             </dt>
             <dd class="col-sm-10">
-                @if (Model.TblFile.Description.Length > 50)
-                {
-                    @Model.TblFile.Description.Substring(0, 50)
-                }
-                else
-                {
-                    @Model.TblFile.Description
-                }
+                @Html.DisplayFor(model => model.TblFile.Description)
+            </dd>
+            <dt class="col-sm-2">
+                سرور
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TblFile.Server.Name)
             </dd>
         </dl>
 
