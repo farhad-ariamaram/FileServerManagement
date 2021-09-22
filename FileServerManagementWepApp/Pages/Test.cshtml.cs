@@ -11,24 +11,17 @@ namespace FileServerManagementWepApp.Pages
 {
     public class TestModel : PageModel
     {
-        private readonly IGetAccessSingleton _singletonGetAccess;
+
 
         public List<TblFile> Moo { get; set; }
 
-        public TestModel(IGetAccessSingleton singletonGetAccess)
-        {
-            _singletonGetAccess = singletonGetAccess;
-        }
-
         public IActionResult OnGet()
         {
-            Moo = _singletonGetAccess.GetAccess;
             return Page();
         }
 
         public IActionResult OnGetRenew()
         {
-            _singletonGetAccess.Renew();
             return Page();
         }
     }

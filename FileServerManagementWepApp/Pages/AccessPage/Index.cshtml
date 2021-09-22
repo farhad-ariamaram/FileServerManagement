@@ -1,0 +1,49 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.AccessPage.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a class="btn btn-success m-1" asp-page="../FiletypePage/Index"><i class="fa fa-file"></i></a>
+    <a class="btn btn-success m-1" asp-page="Create"><i class="fa fa-plus"></i></a>
+</p>
+<table class="table table-responsive table-striped">
+    <thead>
+        <tr>
+            <th>
+                نوع فایل
+            </th>
+            <th>
+                سرور
+            </th>
+            <th>
+                زیر سیستم
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.TblAccess)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FileType.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Server.Id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubSystem.Title)
+                </td>
+                <td>
+                    <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+                    <a class="btn btn-danger btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a class="btn btn-primary" asp-page="../Index"><i class="fa fa-backward"></i></a>

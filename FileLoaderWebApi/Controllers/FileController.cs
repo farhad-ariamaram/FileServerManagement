@@ -102,6 +102,12 @@ namespace FileLoaderWebApi.Controllers
 
         }
 
+        [HttpGet("check")]
+        public async Task<IActionResult> Check()
+        {
+            return new JsonResult(new { data = true });
+        }
+
         public class UploadVm
         {
             public IFormFile file { set; get; }

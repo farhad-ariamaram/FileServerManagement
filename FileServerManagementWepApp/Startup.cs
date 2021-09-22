@@ -45,7 +45,7 @@ namespace FileServerManagementWepApp
                                  .AllowAnyMethod();
                       });
             });
-            services.AddSingleton<IGetAccessSingleton, GetAccess>();
+
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

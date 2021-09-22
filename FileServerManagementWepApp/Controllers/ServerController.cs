@@ -92,7 +92,7 @@ namespace FileServerManagementWepApp.Controllers
 
                 //Check if no server available based on file size
                 TblServer selectedServer = null;
-                for (int i = 0; i < server.Count(); i++)
+                for (int i = 0; i < server.Count()-1; i++)
                 {
                     if ((server[i].Capacity - server[i].Used) < (double.Parse(size) / 1024 / 1024))
                     {
@@ -101,6 +101,7 @@ namespace FileServerManagementWepApp.Controllers
                     else
                     {
                         selectedServer = server[i];
+                        break;
                     }
                 }
                 if (selectedServer == null)

@@ -1,0 +1,39 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.AccessPage.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>حذف</h1>
+
+<h3>آیا از حذف فایل مطمئن می‌باشید؟</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            نوع فایل
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblAccess.FileType.Title)
+        </dd>
+        <dt class="col-sm-2">
+            سرور
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblAccess.Server.Id)
+        </dd>
+        <dt class="col-sm-2">
+            زیر سیستم
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.TblAccess.SubSystem.Title)
+        </dd>
+    </dl>
+
+    <form method="post">
+        <input type="hidden" asp-for="TblAccess.Id" />
+        <input type="submit" value="حذف" class="btn btn-danger" />
+        <a asp-page="./Index">انصراف</a>
+    </form>
+</div>

@@ -1,0 +1,40 @@
+﻿@page
+@model FileServerManagementWepApp.Pages.AccessPage.CreateModel
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>ایجاد دسترسی</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="TblAccess.SubSystemId" class="control-label">زیر سیستم</label>
+                <select asp-for="TblAccess.SubSystemId" class ="form-control" asp-items="ViewBag.SubSystemId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblAccess.ServerId" class="control-label">سرور</label>
+                <select asp-for="TblAccess.ServerId" class ="form-control" asp-items="ViewBag.ServerId"></select>
+            </div>
+            <div class="form-group">
+                <label asp-for="TblAccess.FileTypeId" class="control-label">نوع فایل</label>
+                <select asp-for="TblAccess.FileTypeId" class ="form-control" asp-items="ViewBag.FileTypeId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="افزودن" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-page="Index">بازگشت</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
