@@ -92,7 +92,7 @@ namespace FileServerManagementWepApp.Controllers
 
                 //Check if no server available based on file size
                 TblServer selectedServer = null;
-                for (int i = 0; i < server.Count()-1; i++)
+                for (int i = 0; i < server.Count() - 1; i++)
                 {
                     if ((server[i].Capacity - server[i].Used) < (double.Parse(size) / 1024 / 1024))
                     {
@@ -166,26 +166,25 @@ namespace FileServerManagementWepApp.Controllers
         [HttpGet("download")]
         public async Task<IActionResult> GetDownload(int record, int system, int subsystem)
         {
+            List<LinkList> linklist = new List<LinkList>();
             try
             {
                 //Check file existence
-                var file = await _contetx.TblFiles.Include(t=>t.Server).Include(t => t.FileType).Where(a => a.Record == record && a.SystemId == system && a.SubSystemId == subsystem).FirstOrDefaultAsync();
-                if (file == null)
+                var file = await _contetx.TblFiles.Include(t => t.Server).Include(t => t.FileType).Where(a => a.Record == record && a.SystemId == system && a.SubSystemId == subsystem).ToListAsync();
+                if (!file.Any())
                 {
                     return new JsonResult(new { data = new { Code = "10", Msg = "File Not Exist!" } });
                 }
 
-                if (!file.Active)
+                foreach (var item in file)
                 {
-                    return new JsonResult(new { data = new { Code = "11", Msg = "File Not Active!" } });
+                    if (item.Active && !item.IsDeleted)
+                    {
+                        linklist.Add(new LinkList { link = $"http://{item.Server.Address}/api/file/download/{item.Name}.{item.FileType.Title}",record=item.Record.Value});
+                    }
                 }
 
-                if (file.IsDeleted)
-                {
-                    return new JsonResult(new { data = new { Code = "12", Msg = "File is deleted!" } });
-                }
-
-                return new JsonResult(new { data = new { Code = "7", Msg = "OK!", server = file.Server.Address, name = file.Name + "." + file.FileType.Title } });
+                return new JsonResult(new { data = linklist });
 
             }
             catch (Exception e)
@@ -193,6 +192,12 @@ namespace FileServerManagementWepApp.Controllers
                 return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
 
+        }
+
+        public class LinkList
+        {
+            public string link { get; set; }
+            public long record { get; set; }
         }
     }
 }
