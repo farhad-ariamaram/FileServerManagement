@@ -21,7 +21,7 @@ namespace FileServerManagementWepApp.Pages.AccessPage
         public IActionResult OnGet()
         {
         ViewData["FileTypeId"] = new SelectList(_context.TblFileTypes, "Id", "Title");
-        ViewData["ServerId"] = new SelectList(_context.TblServers, "Id", "Id");
+        ViewData["ServerId"] = new SelectList(_context.TblServers, "Id", "Name");
         ViewData["SubSystemId"] = new SelectList(_context.TblSubSystems, "Id", "Title");
             return Page();
         }

@@ -13,8 +13,11 @@
         <form method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
+                <div class="alert alert-info">
+                    فرمت فایل را به صورت تکی و بدون نقطه وارد کنید
+                </div>
                 <label asp-for="TblFileType.Title" class="control-label">نوع فایل</label>
-                <input asp-for="TblFileType.Title" class="form-control" />
+                <input asp-for="TblFileType.Title" class="form-control" placeholder="txt"/>
                 <span asp-validation-for="TblFileType.Title" class="text-danger"></span>
             </div>
             <div class="form-group">

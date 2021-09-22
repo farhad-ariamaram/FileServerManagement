@@ -39,17 +39,18 @@ namespace FileServerManagementWepApp.Pages.AccessPage
                 return NotFound();
             }
            ViewData["FileTypeId"] = new SelectList(_context.TblFileTypes, "Id", "Title");
-           ViewData["ServerId"] = new SelectList(_context.TblServers, "Id", "Id");
+           ViewData["ServerId"] = new SelectList(_context.TblServers, "Id", "Name");
            ViewData["SubSystemId"] = new SelectList(_context.TblSubSystems, "Id", "Title");
             return Page();
         }
 
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see https://aka.ms/RazorPagesCRUD.
         public async Task<IActionResult> OnPostAsync()
         {
             if (!ModelState.IsValid)
             {
+                ViewData["FileTypeId"] = new SelectList(_context.TblFileTypes, "Id", "Title");
+                ViewData["ServerId"] = new SelectList(_context.TblServers, "Id", "Name");
+                ViewData["SubSystemId"] = new SelectList(_context.TblSubSystems, "Id", "Title");
                 return Page();
             }
 
