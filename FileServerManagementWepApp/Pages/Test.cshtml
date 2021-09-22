@@ -35,6 +35,8 @@
 </div>
 <!-- Modal -->
 
+<a onclick="fileDownload(1,1,1)">hello</a>
+
 <script>
     //Errors Number
     //Code = "1"  , Msg = "Empty/Invalid File Type!" }
@@ -47,6 +49,8 @@
     //Code = "8"  , Msg =  e.Message
     //Code = "9"  , Msg = "ManageServer not response"
     //Code = "10" , Msg = "File not exist"
+    //Code = "11" , Msg = "File not active"
+    //Code = "12" , Msg = "File is deleted"
 
     //ajax #1 inputs
     var ManagerServerAddress = "192.168.10.247:5000";   //Remote Server Address
@@ -154,6 +158,49 @@
             error: function (request, status, error) {
                 alert("Error - Server did not response");
                 return;
+            }
+        });
+    }
+
+    //ajax Download
+    function fileDownload(sy,su,re) {
+
+        //Empty parameters
+        if (sy == null || su == null || re == null) {
+            alert("Empty/Invalid Parameters");
+            return;
+        }
+
+        $.ajax({
+            url: 'http://' + ManagerServerAddress + '/api/download',
+            type: 'GET',
+            data: {
+                system: sy,
+                subsystem: su,
+                record: re
+            },
+            success: function (data) {
+                console.log(data);
+                debugger;
+                fetch('http://' + data.data.server + '/api/file/download/' + data.data.name)
+                    .then(resp => resp.blob())
+                    .then(blob => {
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.style.display = 'none';
+                        a.href = url;
+                        a.download = data.data.name;
+                        document.body.appendChild(a);
+                        a.click();
+                        window.URL.revokeObjectURL(url);
+                    })
+                    .catch(() => alert("Error - Server did not response"));
+            },
+            error: function (request, status, error) {
+                alert("Error - Manager server did not response");
+                return;
+            },
+            complete: function () {
             }
         });
     }

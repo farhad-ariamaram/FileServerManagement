@@ -5,6 +5,12 @@
     ViewData["Title"] = "Index";
 }
 
+@section Menu{
+    <li class="nav-item">
+        <a class="nav-link text-dark btn-link" asp-page="/UpdateSystem">آپدیت سیستم</a>
+    </li>
+}
+
 <h1>لیست فایل ها</h1>
 
 <br />
@@ -69,65 +75,71 @@
     <tbody>
         @foreach (var item in Model.TblFile)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.System.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SubSystem.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FileType.Title)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Size)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreatedDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Record)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Server.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Active)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsDeleted)
-            </td>
-            <td>
-                <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.System.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SubSystem.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FileType.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Size)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreatedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Record)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Server.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Active)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsDeleted)
+                </td>
+                <td>
+                    <a class="btn btn-warning btn-block text-white" asp-page="./Edit" asp-route-id="@item.Id"><i class="fa fa-edit"></i></a>
 
-                @*Delete*@
-                @if (item.IsDeleted == true)
-                {
-                    <a class="btn btn-success btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash-restore"></i></a>
-                    <a class="btn btn-danger btn-block" asp-page="./ForceDelete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
-                }
-                else
-                {
-                    <a class="btn btn-danger btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
-                }
+                    @*Download*@
+                    @if (item.IsDeleted == false || item.Active == true)
+                    {
+                        <a class="btn btn-primary btn-block text-white" asp-page-handler="Download" asp-route-fileId="@item.Id"><i class="fa fa-download"></i></a>
+                    }
 
-                @*Active*@
-                @if (item.Active == true)
-                {
-                    <a class="btn btn-danger btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
-                }
-                else
-                {
-                    <a class="btn btn-success btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
-                }
-            </td>
-        </tr>
+                    @*Delete*@
+                    @if (item.IsDeleted == true)
+                    {
+                        <a class="btn btn-success btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash-restore"></i></a>
+                        <a class="btn btn-danger btn-block" asp-page="./ForceDelete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-danger btn-block" asp-page="./Delete" asp-route-id="@item.Id"><i class="fa fa-trash"></i></a>
+                    }
+
+                    @*Active*@
+                    @if (item.Active == true)
+                    {
+                        <a class="btn btn-danger btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-success btn-block" asp-page="./Active" asp-route-id="@item.Id"><i class="fa fa-power-off"></i></a>
+                    }
+                </td>
+            </tr>
         }
     </tbody>
 </table>

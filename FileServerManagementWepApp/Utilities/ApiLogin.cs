@@ -87,13 +87,13 @@ namespace FileServerManagementWepApp.Utilities
             return reverse;
         }
 
-        public static string rndTransferKey()
+        public static string rndTransferKey(int len = 12)
         {
             string allowedChars = "abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789";
-            char[] chars = new char[12];
+            char[] chars = new char[len];
             Random rd = new Random();
 
-            for (int i = 0; i < 12; i++)
+            for (int i = 0; i < len; i++)
             {
                 chars[i] = allowedChars[rd.Next(0, allowedChars.Length)];
             }

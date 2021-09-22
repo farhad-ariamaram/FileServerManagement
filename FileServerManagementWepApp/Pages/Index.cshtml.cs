@@ -54,5 +54,21 @@ namespace FileServerManagementWepApp.Pages
                     break;
             }
         }
+
+        public async Task<IActionResult> OnGetDownload(long fileId)
+        {
+            //DOWNLOAD FROM SERVER
+            var file = await _context.TblFiles.FindAsync(fileId);
+            var sever = await _context.TblServers.FindAsync(file.ServerId);
+            var filetype = await _context.TblFileTypes.FindAsync(file.FileTypeId);
+            var name = file.Name + "." + filetype.Title;
+            HttpClient _client = new HttpClient();
+            
+
+            var invoiceResponse = await _client.GetAsync("http://" + sever.Address + "/api/file/download/" + name);
+            var invoiceStream = await invoiceResponse.Content.ReadAsStreamAsync();
+
+            return File(invoiceStream, "application/force-download", name);
+        }
     }
 }

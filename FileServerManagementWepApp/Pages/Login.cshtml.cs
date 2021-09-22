@@ -46,26 +46,13 @@ namespace FileServerManagementWepApp.Pages
                 return Page();
             }
 
-            string user = Request.Form["userModel.Username"];
-            string pass = Request.Form["userModel.Password"];
-
-            var LocalCheck = _context.TblUsers.Where(a => a.Username == user
-                                                     && a.Password == pass);
-
-            if (await LocalCheck.AnyAsync())
-            {
-                string uid = LocalCheck.FirstOrDefault().Id + "";
-                HttpContext.Session.SetString("uid", uid);
-
-                return RedirectToPage("./Index");
-            }
-
-            string key = Consts._CONST_KEY;
+            string key = Consts._CONST_KEY2;
             string tk = ApiLogin.rndTransferKey();
-            string token = ApiLogin.EncryptString(tk, key);
-            string p1 = ApiLogin.EncryptString(Request.Form["userModel.Username"], key);
-            string p2 = ApiLogin.EncryptString(Request.Form["userModel.Password"], key);
-            string p3 = token;
+            string p0 = "4";
+
+            string p1 = ApiLogin.EncryptString(userModel.Username, key);
+            string p2 = ApiLogin.EncryptString(userModel.Password, key);
+            string p3 = ApiLogin.EncryptString(tk, key);
 
             var theWebRequest = HttpWebRequest.Create("http://192.168.10.250/ExLogin.aspx/LI");
             theWebRequest.Method = "POST";
@@ -75,7 +62,7 @@ namespace FileServerManagementWepApp.Pages
             using (var writer = theWebRequest.GetRequestStream())
             {
                 string send = null;
-                send = "{\"p0\":\"1\",\"p1\":\"" + p1 + "\",\"p2\":\"" + p2 + "\",\"p3\":\"" + p3 + "\"}";
+                send = "{\"p0\":\"" + p0 + "\",\"p1\":\"" + p1 + "\",\"p2\":\"" + p2 + "\",\"p3\":\"" + p3 + "\"}";
 
                 var data = Encoding.UTF8.GetBytes(send);
 
@@ -91,68 +78,83 @@ namespace FileServerManagementWepApp.Pages
             {
                 result = "{" + result.Substring(28).Replace("}}", "}");
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 ModelState.AddModelError("WrongUP", "نام کاربری یا کلمه عبور اشتباه است");
                 return Page();
             }
 
-            var splashInfo = JsonConvert.DeserializeObject<clsExLogin>(result);
+            ApiUser EncryptUserModel = JsonConvert.DeserializeObject<ApiUser>(result);
 
-            string backTk = ApiLogin.DecryptString(splashInfo.Status, key);
-            if (tk == ApiLogin.Reverse(backTk))
+            string backTk = ApiLogin.Reverse(ApiLogin.DecryptString(EncryptUserModel.Status, key));
+            ApiUser DecryptUserModel = new ApiUser();
+            if (tk == backTk)
             {
-                splashInfo.id = ApiLogin.DecryptString(splashInfo.id, key);
-                splashInfo.name = ApiLogin.DecryptString(splashInfo.name, key);
-                splashInfo.Status = ApiLogin.DecryptString(splashInfo.Status, key);
+                DecryptUserModel.id = ApiLogin.DecryptString(EncryptUserModel.id, key);
+                DecryptUserModel.name = ApiLogin.DecryptString(EncryptUserModel.name, key);
+                DecryptUserModel.Status = ApiLogin.DecryptString(EncryptUserModel.Status, key);
+                DecryptUserModel.IsGuard = ApiLogin.DecryptString(EncryptUserModel.IsGuard, key);
+                DecryptUserModel.IsGuardAdmin = ApiLogin.DecryptString(EncryptUserModel.IsGuardAdmin, key);
+                DecryptUserModel.IsEmployeeRequest = ApiLogin.DecryptString(EncryptUserModel.IsEmployeeRequest, key);
+                DecryptUserModel.IsGuardRecorder = ApiLogin.DecryptString(EncryptUserModel.IsGuardRecorder, key);
+                DecryptUserModel.IsMould = ApiLogin.DecryptString(EncryptUserModel.IsMould, key);
+                DecryptUserModel.token = ApiLogin.DecryptString(EncryptUserModel.token, key);
 
-                bool withError = false;
+                var currentUser = _context.TblUsers.Where(a => a.Id == int.Parse(DecryptUserModel.id)).FirstOrDefault();
 
-                if (!withError)
+                if (currentUser != null)
                 {
-                    var preuser = await _context.TblUsers.FindAsync(Int32.Parse(splashInfo.id));
-                    if (preuser != null)
+                    //check name
+                    if (!currentUser.Name.Equals(DecryptUserModel.name))
                     {
-                        _context.TblUsers.Remove(preuser);
-                        await _context.SaveChangesAsync();
+                        currentUser.Name = DecryptUserModel.name;
                     }
-                    
-                    await _context.TblUsers.AddAsync(new TblUser
-                    {
-                        Id = Int32.Parse(splashInfo.id),
-                        Name = splashInfo.name,
-                        Password = Request.Form["userModel.Password"],
-                        Token = token,
-                        Username = Request.Form["userModel.Username"]
-                    });
-                    await _context.SaveChangesAsync();
 
-                    string uid = splashInfo.id;
+                    //check pass
+                    if (!currentUser.Password.Equals(ApiLogin.sha512(userModel.Username + Consts._CONST_SALT)))
+                    {
+                        currentUser.Password = ApiLogin.sha512(userModel.Password + Consts._CONST_SALT);
+                    }
+
+                    //token
+                    currentUser.Token = DecryptUserModel.token;
+
+                    _context.TblUsers.Update(currentUser);
+                    _context.SaveChanges();
+
+                    string uid = DecryptUserModel.id;
                     HttpContext.Session.SetString("uid", uid);
 
-                    //LOG LOGIN
-                    var logLogin = new TblLog {
-                        UserId = int.Parse(uid),
-                        Datetime = DateTime.Now,
-                        Action = "login"
-                    };
-                    await _context.TblLogs.AddAsync(logLogin);
-                    await _context.SaveChangesAsync();
-
                     return RedirectToPage("./Index");
+
                 }
                 else
                 {
-                    ModelState.AddModelError("WrongUP", "در سیستم خطایی رخ داده است ! لطفا در زمان دیگری وارد شوید!");
-                    return Page();
+
+                    TblUser newUser = new TblUser();
+
+                    newUser.Id = int.Parse(DecryptUserModel.id);
+                    newUser.Username = Request.Form["userModel.Username"];
+                    newUser.Password = ApiLogin.sha512(Request.Form["userModel.Password"] + Consts._CONST_SALT);
+                    newUser.Name = DecryptUserModel.name;
+                    newUser.Token = DecryptUserModel.token;
+
+                    _context.TblUsers.Add(newUser);
+                    _context.SaveChanges();
+
+                    string uid = newUser.Id+"";
+                    HttpContext.Session.SetString("uid", uid);
+
+                    return RedirectToPage("./Index");
                 }
+
             }
             else
             {
                 ModelState.AddModelError("WrongUP", "نام کاربری یا کلمه عبور اشتباه است");
                 return Page();
             }
-
+             
         }
 
         public class UserModel
@@ -166,11 +168,17 @@ namespace FileServerManagementWepApp.Pages
             public string Password { get; set; }
         }
 
-        public class clsExLogin
+        public class ApiUser
         {
             public string Status;
             public string id;
             public string name;
+            public string IsGuard;
+            public string IsGuardAdmin;
+            public string IsEmployeeRequest;
+            public string IsGuardRecorder;
+            public string IsMould;
+            public string token;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using FileServerManagementWepApp.Models;
+using FileServerManagementWepApp.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -128,7 +129,6 @@ namespace FileServerManagementWepApp.Controllers
             {
                 return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
-
         }
 
         [HttpGet("result/{name}/{id}/{status}")]
@@ -160,6 +160,38 @@ namespace FileServerManagementWepApp.Controllers
             {
                 return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
             }
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> GetDownload(int record, int system, int subsystem)
+        {
+            try
+            {
+                //Check file existence
+                var file = await _contetx.TblFiles.Include(t=>t.Server).Include(t => t.FileType).Where(a => a.Record == record && a.SystemId == system && a.SubSystemId == subsystem).FirstOrDefaultAsync();
+                if (file == null)
+                {
+                    return new JsonResult(new { data = new { Code = "10", Msg = "File Not Exist!" } });
+                }
+
+                if (!file.Active)
+                {
+                    return new JsonResult(new { data = new { Code = "11", Msg = "File Not Active!" } });
+                }
+
+                if (file.IsDeleted)
+                {
+                    return new JsonResult(new { data = new { Code = "12", Msg = "File is deleted!" } });
+                }
+
+                return new JsonResult(new { data = new { Code = "7", Msg = "OK!", server = file.Server.Address, name = file.Name + "." + file.FileType.Title } });
+
+            }
+            catch (Exception e)
+            {
+                return new JsonResult(new { data = new { Code = "8", Msg = e.Message } });
+            }
+
         }
     }
 }
